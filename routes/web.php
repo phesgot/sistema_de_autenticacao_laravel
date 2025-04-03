@@ -3,6 +3,19 @@
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function(){
+Route::get('/', function () {
     DB::connection()->getPdo();
+    echo 'Home';
+});
+
+Route::view('/teste', 'teste')->middleware('auth');
+
+Route::get('/login', function () {
+    echo 'Login';
+})->name('login');
+
+Route::middleware('guest')->group(function(){
+    Route::get('/register', function(){
+        echo 'Formulário de registro'; 
+    })->name('register');
 });
