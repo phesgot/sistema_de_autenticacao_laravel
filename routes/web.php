@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MainController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -21,9 +22,7 @@ Route::middleware('guest')->group(function(){
 
 // usuários autenticados
 Route::middleware('auth')->group(function(){
-    Route::get('/', function(){
-        echo 'HOME';
-    })->name('home');
+    Route::get('/', [MainController::class, 'home'])->name('home');
 
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 });
