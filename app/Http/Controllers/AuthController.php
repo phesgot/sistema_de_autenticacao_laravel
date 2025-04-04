@@ -7,6 +7,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 use function Laravel\Prompts\password;
 
@@ -100,22 +101,38 @@ class AuthController extends Controller
             [
                 'username' => 'required|min:3|max:30|unique:users,username',
                 'email' => 'required|email|unique:users,email',
-                'password' => 'required|min:8|max:32|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'
+                'password' => 'required|min:8|max:32|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/',
+                'password_confirmation' => 'required|same:password'
             ],
             [
                 'username.required' => 'O usuário é obrigatório',
                 'username.min' => 'O usuário deve ter no mínimo :min caracteres',
                 'username.max' => 'O usuário deve ter no máximo :max caracteres',
-                'username.unique' => 'O usuário já existe',
+                'username.unique' => 'Este nome não está disponivel',
 
                 'email.required' => 'O email é obrigatório',
-                'email.unique' => 'O email já existe',
+                'email.email' => 'O email deve ser um endereço de email válido',
+                'email.unique' => 'Este email não está disponivel',
 
                 'password.required' => 'A senha é obrigatório',
                 'password.min' => 'A senha deve ter no mínimo :min caracteres',
                 'password.max' => 'A senha deve ter no máximo :max caracteres',
-                'password.regex' => 'A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula e um número'
+                'password.regex' => 'A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula e um número',
+
+                'password_confirmation.required' => 'A confirmação da senha é obrigatório',
+                'password_confirmation.same' => 'A confirmação da senha deve ser igual a senha',
+
             ]
         );
+
+        // vamos criar um novo usuário definindo um token de verificação de email
+        $user = new User();
+        $user->username = $request->username;
+        $user->email = $request->email;
+        $user->password = bcrypt($request->password);
+        $user->token = Str::random(64);
+
+
+        dd($user);
     }
 }
