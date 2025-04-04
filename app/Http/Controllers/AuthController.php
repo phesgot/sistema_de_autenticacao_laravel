@@ -283,4 +283,54 @@ class AuthController extends Controller
             'server_message' => $generic_message
         ]);
     }
+
+    public function reset_password($token): View | RedirectResponse
+    {
+        // verificar se o token é valido
+        $user = User::where('token', $token)->first();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        return view('auth.reset_password', ['token' => $token]);
+    }
+
+    public function reset_password_update(Request $request): RedirectResponse
+    {
+        // forma validation
+        $request->validate(
+            [
+                'token' => 'required',
+                'new_password' => 'required|min:8|max:32|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/|different:current_password',
+                'new_password_confirmation' => 'required|same:new_password'
+
+            ],
+            [
+                // não coloco menssagem para o token porque não é suposto o utilizador alterar o token
+                // nem ter acesso a essa informação.
+                'new_password.required' => 'A nova senha é obrigatório',
+                'new_password.min' => 'A senha deve ter no mínimo :min caracteres',
+                'new_password.max' => 'A senha deve ter no máximo :max caracteres',
+                'new_password.regex' => 'A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula e um número',
+
+                'new_password_confirmation.required' => 'A confirmação da nova senha é obrigatório',
+                'new_password_confirmation.same' => 'A confirmação da nova senha deve ser igual a nova senha',
+            ]
+        );
+
+        // verifica se o token é valido
+        $user = User::where('token', $request->token)->first();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        // atualizar a senha do user na base de dados
+        $user->password = bcrypt($request->nee_password);
+        $user->token = null;
+        $user->save();
+
+        return redirect()->route('login')->with([
+            'success' => true
+        ]);
+    }
 }

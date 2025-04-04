@@ -25,7 +25,7 @@ Route::middleware('guest')->group(function () {
 
     // reset password 
     Route::get('/reset_password/{token}', [AuthController::class, 'reset_password'])->name('reset_password');
-    Route::get('/reset_password', [AuthController::class, 'reset_password_update'])->name('reset_password_update');
+    Route::post('/reset_password', [AuthController::class, 'reset_password_update'])->name('reset_password_update');
 });
 
 // usuários autenticados

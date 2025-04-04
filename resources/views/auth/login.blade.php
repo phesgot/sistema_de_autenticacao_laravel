@@ -11,7 +11,8 @@
 
                         <div class="mb-3">
                             <label for="username" class="form-label">Usuário</label>
-                            <input type="text" class="form-control" id="username" name="username" value="{{ old('username') }}">
+                            <input type="text" class="form-control" id="username" name="username"
+                                value="{{ old('username') }}">
                             @error('username')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
@@ -35,15 +36,21 @@
                                     <a href="{{ route('forgot_password') }}">Esqueci a minha senha</a>
                                 </div>
                             </div>
-                                <div class="col text-end align-self-center">
-                                    <button type="submit" class="btn btn-secondary px-5">ENTRAR</button>
-                                </div>
+                            <div class="col text-end align-self-center">
+                                <button type="submit" class="btn btn-secondary px-5">ENTRAR</button>
                             </div>
+                        </div>
 
                     </form>
 
                     @if (session('invalid_login'))
                         <div class="alert alert-danger text-center mt-4">{{ session('invalid_login') }}</div>
+                    @endif
+
+                    @if (session('success'))
+                        <p class="mt-3 alert alert-success text-center p-2">
+                            Senha redefinida com sucesso!
+                        </p>
                     @endif
 
                 </div>
