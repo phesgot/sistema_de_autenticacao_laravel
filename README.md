@@ -11,6 +11,7 @@ Este projeto é uma aplicação web desenvolvida em Laravel que implementa um si
 - ✅ Validações robustas para garantir a segurança dos dados
 
 ## 🎥 Demonstração
+![Image](https://github.com/user-attachments/assets/5281d153-f11a-4178-b876-fc5a17a0e0d1)
 
 
 ## 📂 Tecnologias Utilizadas
