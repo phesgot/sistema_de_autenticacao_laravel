@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\NewUserConfirmation;
+use App\Mail\ResetPassword;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
@@ -229,6 +230,57 @@ class AuthController extends Controller
         // apresenta uma menssagem de sucesso
         return redirect()->route('profile')->with([
             'success' => 'A senha foi atualizada com sucesso'
+        ]);
+    }
+
+    public function forgot_password(): View
+    {
+        return view('auth.forgot_password');
+    }
+
+    public function send_reset_password_link(Request $request)
+    {
+        // form validation
+        $request->validate(
+            [
+                'email' => 'required|email',
+            ],
+            [
+                'email.required' => 'O email é obrigatório.',
+                'email.email' => 'O email deve ser um endereço de email válido.',
+            ]
+        );
+
+        $generic_message = "Verifique a sua caixa de correio para prosseguir com a recuperação de senha.";
+
+        // verificar se o email existe
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return back()->with([
+                'server_message' => $generic_message
+            ]);
+        }
+
+        // criar o link com token para enviar no email
+        $user->token = Str::random(64);
+
+        $token_link = route('reset_password', ['token' => $user->token]);
+
+        // envio de email com link para recuperar a senha
+        $result = Mail::to($user->email)->send(new ResetPassword($user->username, $token_link));
+
+        // verifica se o email foi enviado
+        if (!$result) {
+            return back()->with([
+                'server_message' => $generic_message
+            ]);
+        }
+
+        // guarda o token na base de dados
+        $user->save();
+
+        return back()->with([
+            'server_message' => $generic_message
         ]);
     }
 }

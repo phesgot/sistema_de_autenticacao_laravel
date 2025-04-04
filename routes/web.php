@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 // usuários não autenticados
-Route::middleware('guest')->group(function(){
+Route::middleware('guest')->group(function () {
 
     // Login routes
     Route::get('/login', [AuthController::class, 'login'])->name('login');
@@ -18,10 +18,18 @@ Route::middleware('guest')->group(function(){
 
     // new user confirmation
     Route::get('/new_user_confirmation/{token}', [AuthController::class, 'new_user_conformation'])->name('new_user_conformation');
+
+    // forgot password
+    Route::get('/forgot_password', [AuthController::class, 'forgot_password'])->name('forgot_password');
+    Route::post('/forgot_password', [AuthController::class, 'send_reset_password_link'])->name('send_reset_password_link');
+
+    // reset password 
+    Route::get('/reset_password/{token}', [AuthController::class, 'reset_password'])->name('reset_password');
+    Route::get('/reset_password', [AuthController::class, 'reset_password_update'])->name('reset_password_update');
 });
 
 // usuários autenticados
-Route::middleware('auth')->group(function(){
+Route::middleware('auth')->group(function () {
     Route::get('/', [MainController::class, 'home'])->name('home');
 
     Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
