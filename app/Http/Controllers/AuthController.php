@@ -325,12 +325,42 @@ class AuthController extends Controller
         }
 
         // atualizar a senha do user na base de dados
-        $user->password = bcrypt($request->nee_password);
+        $user->password = bcrypt($request->new_password);
         $user->token = null;
         $user->save();
 
         return redirect()->route('login')->with([
             'success' => true
         ]);
+    }
+
+    public function delete_account(Request $request): RedirectResponse
+    {
+        // validação do formulário
+        $request->validate(
+            [
+                'delete_confirmation' => 'required|in:ELIMINAR'
+            ],
+            [
+                'delete_confirmation.required' => 'A confirmação é obrigatória',
+                'delete_confirmation.in' => 'É obrigatório escrever a palavra ELIMINAR'
+            ]
+        );
+
+        // remover a conta de usuário (hard delete ou soft delete)
+        // soft delete
+        $user = Auth::user();
+        $user->delete();
+
+        // hard delete
+        // $user = Auth::user();
+        // $user->forceDelete();
+        
+
+        // logout
+        Auth::logout();
+
+        // redirect para login
+        return redirect()->route('login')->with(['account_deleted' => true]);
     }
 }
