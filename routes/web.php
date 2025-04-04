@@ -24,5 +24,9 @@ Route::middleware('guest')->group(function(){
 Route::middleware('auth')->group(function(){
     Route::get('/', [MainController::class, 'home'])->name('home');
 
+    Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
+    Route::post('/profile', [AuthController::class, 'change_password'])->name('change_password');
+
+    // Logout
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 });
