@@ -186,6 +186,49 @@ class AuthController extends Controller
 
     public function change_password(Request $request)
     {
+        // form validation
+        $request->validate(
+            [
+                'current_password' => 'required|min:8|max:32|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/',
+                'new_password' => 'required|min:8|max:32|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/|different:current_password',
+                'new_password_confirmation' => 'required|same:new_password'
+            ],
+            [
+                'current_password.required' => 'A senha atual é obrigatório',
+                'current_password.min' => 'A senha deve ter no mínimo :min caracteres',
+                'current_password.max' => 'A senha deve ter no máximo :max caracteres',
+                'current_password.regex' => 'A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula e um número',
 
+                'new_password.required' => 'A nova senha é obrigatório',
+                'new_password.min' => 'A senha deve ter no mínimo :min caracteres',
+                'new_password.max' => 'A senha deve ter no máximo :max caracteres',
+                'new_password.regex' => 'A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula e um número',
+                'new_password.different' => 'A nova senha deve ser diferente da senha atual',
+
+                'new_password_confirmation.required' => 'A confirmação da nova senha é obrigatório',
+                'new_password_confirmation.same' => 'A confirmação da nova senha deve ser igual a nova senha',
+
+            ]
+        );
+
+        // verificar se a password atual (current_password) está correta
+        if (!password_verify($request->current_password, Auth::user()->password)) {
+            return back()->with([
+                'server_error' => 'A senha atual não está correta'
+            ]);
+        }
+
+        // atualizar a senha na base de dados
+        $user = Auth::user();
+        $user->password = bcrypt($request->new_password);
+        $user->save();
+
+        // atualizar a password na sessão
+        Auth::user()->password = $request->new_password;
+
+        // apresenta uma menssagem de sucesso
+        return redirect()->route('profile')->with([
+            'success' => 'A senha foi atualizada com sucesso'
+        ]);
     }
 }
