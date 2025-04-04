@@ -29,7 +29,8 @@ class AuthController extends Controller
                 'username.required' => 'O usuário é obrigatório',
                 'username.min' => 'O usuário deve ter no mínimo :min caracteres',
                 'username.max' => 'O usuário deve ter no máximo :max caracteres',
-                'password.required' => 'O senha é obrigatório',
+
+                'password.required' => 'A senha é obrigatório',
                 'password.min' => 'A senha deve ter no mínimo :min caracteres',
                 'password.max' => 'A senha deve ter no máximo :max caracteres',
                 'password.regex' => 'A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula e um número'
@@ -85,5 +86,36 @@ class AuthController extends Controller
         // logout
         Auth::logout();
         return redirect()->route('login');
+    }
+
+    public function register(): View
+    {
+        return view('auth.register');
+    }
+
+    public function store_user(Request $request): void
+    {
+        // form validation
+        $request->validate(
+            [
+                'username' => 'required|min:3|max:30|unique:users,username',
+                'email' => 'required|email|unique:users,email',
+                'password' => 'required|min:8|max:32|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'
+            ],
+            [
+                'username.required' => 'O usuário é obrigatório',
+                'username.min' => 'O usuário deve ter no mínimo :min caracteres',
+                'username.max' => 'O usuário deve ter no máximo :max caracteres',
+                'username.unique' => 'O usuário já existe',
+
+                'email.required' => 'O email é obrigatório',
+                'email.unique' => 'O email já existe',
+
+                'password.required' => 'A senha é obrigatório',
+                'password.min' => 'A senha deve ter no mínimo :min caracteres',
+                'password.max' => 'A senha deve ter no máximo :max caracteres',
+                'password.regex' => 'A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula e um número'
+            ]
+        );
     }
 }
