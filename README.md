@@ -23,7 +23,7 @@ Este projeto é uma aplicação web desenvolvida em Laravel que implementa um si
 ## 📦 Instalação e Execução  
 ```bash
 # Clone o repositório
-git clone https://github.com/phesgot/notas.git
+https://github.com/phesgot/sistema_de_autenticacao_laravel.git
 
 # Entre na pasta do projeto
 
